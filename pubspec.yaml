@@ -1,0 +1,51 @@
+name: shuttletrack
+description: "ShuttleTrack — Real-time university shuttle tracking app"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # State Management (BLoC)
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.7
+
+  # Dependency Injection
+  get_it: ^8.0.3
+
+  # Maps
+  google_maps_flutter: ^2.10.0
+
+  # Local Storage
+  shared_preferences: ^2.3.4
+
+  # Local Notifications
+  flutter_local_notifications: ^18.0.1
+
+  # Onboarding page indicator
+  smooth_page_indicator: ^1.2.0+3
+
+  # ---- Firebase — uncomment after running `flutterfire configure` ----
+  # firebase_core: ^3.12.1
+  # cloud_firestore: ^5.6.7
+  # firebase_messaging: ^15.2.4
+
+  # ---- AdMob — uncomment after creating an AdMob account ----
+  # google_mobile_ads: ^5.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
