@@ -61,6 +61,9 @@ class RoutesScreen extends StatelessWidget {
               },
             );
           }
+          if (state is RouteEmpty) {
+            return const Center(child: Text('No routes available'));
+          }
 
           return const SizedBox.shrink();
         },

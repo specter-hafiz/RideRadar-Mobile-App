@@ -41,7 +41,9 @@ class HomeScreen extends StatelessWidget {
               return Stack(
                 children: [
                   ShuttleMap(
-                    route: activeRoute,
+                    route: trackingState is TrackingActive
+                        ? trackingState.activeRoute
+                        : null,
                     shuttles: trackingState is TrackingActive
                         ? trackingState.shuttles
                         : const [],

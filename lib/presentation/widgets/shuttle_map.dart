@@ -16,8 +16,8 @@ class ShuttleMap extends StatefulWidget {
 class _ShuttleMapState extends State<ShuttleMap> {
   GoogleMapController? _mapController;
 
-  static const _defaultCenter = LatLng(-25.7545, 28.2314);
-  static const _defaultZoom = 7.0;
+  static const _defaultCenter = LatLng(6.6752095, -1.5708816);
+  static const _defaultZoom = 16.0;
 
   @override
   void didUpdateWidget(covariant ShuttleMap oldWidget) {

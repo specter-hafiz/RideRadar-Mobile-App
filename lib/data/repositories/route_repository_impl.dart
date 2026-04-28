@@ -1,9 +1,9 @@
-import 'package:shuttletrack/data/datasources/mock_tracking_datasource.dart';
+import 'package:shuttletrack/data/datasources/firestore_shuttle_datasource.dart';
 import 'package:shuttletrack/domain/entities/shuttle_route.dart';
 import 'package:shuttletrack/domain/repositories/route_repository.dart';
 
 class RouteRepositoryImpl implements RouteRepository {
-  final MockTrackingDatasource _datasource;
+  final FirestoreShuttleDatasource _datasource;
 
   const RouteRepositoryImpl(this._datasource);
 

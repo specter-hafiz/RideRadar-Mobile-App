@@ -87,7 +87,7 @@ class RouteCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      '${route.stops.length} stops',
+                      '${route.stops.length} stop${route.stops.length > 1 ? 's' : ''}',
                       style: theme.textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),

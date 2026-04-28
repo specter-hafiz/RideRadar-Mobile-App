@@ -14,14 +14,15 @@ final class RouteLoading extends RouteState {
   const RouteLoading();
 }
 
+final class RouteEmpty extends RouteState {
+  const RouteEmpty();
+}
+
 final class RouteLoaded extends RouteState {
   final List<ShuttleRoute> routes;
   final ShuttleRoute? selectedRoute;
 
-  const RouteLoaded({
-    required this.routes,
-    this.selectedRoute,
-  });
+  const RouteLoaded({required this.routes, this.selectedRoute});
 
   @override
   List<Object?> get props => [routes, selectedRoute];

@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shuttletrack/core/services/directions_service.dart';
 import 'package:shuttletrack/core/services/notification_service.dart';
+import 'package:shuttletrack/data/datasources/firestore_shuttle_datasource.dart';
 import 'package:shuttletrack/data/datasources/local_settings_datasource.dart';
 import 'package:shuttletrack/data/datasources/mock_tracking_datasource.dart';
 import 'package:shuttletrack/data/repositories/route_repository_impl.dart';
@@ -21,17 +23,19 @@ Future<void> initDependencies() async {
   sl.registerSingleton<SharedPreferences>(sharedPrefs);
 
   // Datasources
-  sl.registerLazySingleton(() => MockTrackingDatasource());
+  sl.registerLazySingleton(() => FirestoreShuttleDatasource());
   sl.registerLazySingleton(
     () => LocalSettingsDatasource(sl<SharedPreferences>()),
   );
-
+  sl.registerLazySingleton(
+    () => DirectionsService(apiKey: 'AIzaSyDhYjxSdHgB72tvcOyp36QBf_SY4dKW7Tg'),
+  );
   // Repositories
   sl.registerLazySingleton<ShuttleRepository>(
-    () => ShuttleRepositoryImpl(sl<MockTrackingDatasource>()),
+    () => ShuttleRepositoryImpl(sl<FirestoreShuttleDatasource>()),
   );
   sl.registerLazySingleton<RouteRepository>(
-    () => RouteRepositoryImpl(sl<MockTrackingDatasource>()),
+    () => RouteRepositoryImpl(sl<FirestoreShuttleDatasource>()),
   );
   sl.registerLazySingleton<SettingsRepository>(
     () => SettingsRepositoryImpl(sl<LocalSettingsDatasource>()),

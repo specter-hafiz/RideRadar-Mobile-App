@@ -24,9 +24,9 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     required ShuttleRepository shuttleRepository,
     required RouteRepository routeRepository,
     this.geofenceRadius = 100.0,
-  })  : _shuttleRepository = shuttleRepository,
-        _routeRepository = routeRepository,
-        super(const TrackingInitial()) {
+  }) : _shuttleRepository = shuttleRepository,
+       _routeRepository = routeRepository,
+       super(const TrackingInitial()) {
     on<StartTracking>(_onStartTracking);
     on<StopTracking>(_onStopTracking);
     on<_ShuttlePositionsUpdated>(_onShuttlePositionsUpdated);
@@ -39,8 +39,6 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     emit(const TrackingLoading());
 
     try {
-      _shuttleRepository.startSimulation();
-
       final route = await _routeRepository.getRoute(event.routeId);
       if (route == null) {
         emit(const TrackingError('Route not found'));
@@ -53,8 +51,8 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
       _shuttleSubscription = _shuttleRepository
           .watchShuttlesOnRoute(event.routeId)
           .listen((shuttles) {
-        add(_ShuttlePositionsUpdated(shuttles: shuttles, route: route));
-      });
+            add(_ShuttlePositionsUpdated(shuttles: shuttles, route: route));
+          });
     } catch (e) {
       emit(TrackingError(e.toString()));
     }
@@ -66,7 +64,6 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   ) async {
     await _shuttleSubscription?.cancel();
     _shuttleSubscription = null;
-    _shuttleRepository.stopSimulation();
     _recentlyNotifiedStopIds.clear();
     emit(const TrackingInitial());
   }
@@ -104,17 +101,18 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
       (key) => !currentProximityKeys.contains(key),
     );
 
-    emit(TrackingActive(
-      shuttles: event.shuttles,
-      activeRoute: event.route,
-      shuttleStopProximity: newProximity,
-    ));
+    emit(
+      TrackingActive(
+        shuttles: event.shuttles,
+        activeRoute: event.route,
+        shuttleStopProximity: newProximity,
+      ),
+    );
   }
 
   @override
   Future<void> close() async {
     await _shuttleSubscription?.cancel();
-    _shuttleRepository.stopSimulation();
     return super.close();
   }
 }

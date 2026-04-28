@@ -1,31 +1,32 @@
 import 'dart:async';
 
 import 'package:shuttletrack/core/constants/app_constants.dart';
+import 'package:shuttletrack/core/services/directions_service.dart';
 import 'package:shuttletrack/core/utils/geo_utils.dart';
 import 'package:shuttletrack/domain/entities/bus_stop.dart';
 import 'package:shuttletrack/domain/entities/shuttle.dart';
 import 'package:shuttletrack/domain/entities/shuttle_route.dart';
 
 class MockTrackingDatasource {
-  Timer? _simulationTimer;
-  final _shuttleStreamController =
-      StreamController<List<Shuttle>>.broadcast();
+  MockTrackingDatasource({required DirectionsService directionsService})
+    : _directionsService = directionsService;
 
-  late final List<ShuttleRoute> _routes;
+  final DirectionsService _directionsService;
+
+  Timer? _simulationTimer;
+  final _shuttleStreamController = StreamController<List<Shuttle>>.broadcast();
+  bool _initialized = false;
+  late List<ShuttleRoute> _routes;
   late final List<Shuttle> _shuttleDefinitions;
-  late final Map<String, List<List<double>>> _routeWaypoints;
+  late Map<String, List<List<double>>> _routeWaypoints;
   final Map<String, int> _shuttleWaypointIndices = {};
   List<Shuttle> _currentShuttlePositions = [];
 
-  MockTrackingDatasource() {
-    _initializeMockData();
-  }
-
-  void _initializeMockData() {
-    _routes = _buildRoutes();
+  Future<void> init() async {
+    if (_initialized) return;
+    _routes = await _buildRoutes();
     _routeWaypoints = {
-      for (final route in _routes)
-        route.id: _buildWaypointsForRoute(route),
+      for (final route in _routes) route.id: _buildWaypointsForRoute(route),
     };
     _shuttleDefinitions = _buildShuttles();
 
@@ -34,201 +35,161 @@ class MockTrackingDatasource {
     }
 
     _currentShuttlePositions = List.of(_shuttleDefinitions);
+    _initialized = true;
   }
 
-  List<ShuttleRoute> _buildRoutes() {
-    final campusLoopStops = [
-      const BusStop(
-        id: 'campus_loop_stop_1',
-        name: 'Main Gate',
-        latitude: -25.7530,
-        longitude: 28.2290,
-        order: 1,
-        routeId: 'campus_loop',
-      ),
-      const BusStop(
-        id: 'campus_loop_stop_2',
-        name: 'Engineering Building',
-        latitude: -25.7510,
-        longitude: 28.2340,
-        order: 2,
-        routeId: 'campus_loop',
-      ),
-      const BusStop(
-        id: 'campus_loop_stop_3',
-        name: 'Student Center',
-        latitude: -25.7540,
-        longitude: 28.2370,
-        order: 3,
-        routeId: 'campus_loop',
-      ),
-      const BusStop(
-        id: 'campus_loop_stop_4',
-        name: 'Library',
-        latitude: -25.7570,
-        longitude: 28.2360,
-        order: 4,
-        routeId: 'campus_loop',
-      ),
-      const BusStop(
-        id: 'campus_loop_stop_5',
-        name: 'Sports Complex',
-        latitude: -25.7580,
-        longitude: 28.2310,
-        order: 5,
-        routeId: 'campus_loop',
-      ),
-    ];
-
-    final cityExpressStops = [
-      const BusStop(
-        id: 'city_express_stop_1',
-        name: 'Campus North',
-        latitude: -25.7500,
-        longitude: 28.2320,
-        order: 1,
-        routeId: 'city_express',
-      ),
-      const BusStop(
-        id: 'city_express_stop_2',
-        name: 'Tech Park',
-        latitude: -25.7450,
-        longitude: 28.2350,
-        order: 2,
-        routeId: 'city_express',
-      ),
-      const BusStop(
-        id: 'city_express_stop_3',
-        name: 'Shopping Mall',
-        latitude: -25.7400,
-        longitude: 28.2380,
-        order: 3,
-        routeId: 'city_express',
-      ),
-      const BusStop(
-        id: 'city_express_stop_4',
-        name: 'City Center',
-        latitude: -25.7350,
-        longitude: 28.2400,
-        order: 4,
-        routeId: 'city_express',
-      ),
-    ];
-
-    final residenceStops = [
-      const BusStop(
-        id: 'residence_stop_1',
-        name: 'Campus South',
-        latitude: -25.7600,
-        longitude: 28.2330,
-        order: 1,
-        routeId: 'residence',
-      ),
-      const BusStop(
-        id: 'residence_stop_2',
-        name: 'Medical Center',
-        latitude: -25.7630,
-        longitude: 28.2300,
-        order: 2,
-        routeId: 'residence',
-      ),
-      const BusStop(
-        id: 'residence_stop_3',
-        name: 'Residence Hall A',
-        latitude: -25.7660,
-        longitude: 28.2280,
-        order: 3,
-        routeId: 'residence',
-      ),
-      const BusStop(
-        id: 'residence_stop_4',
-        name: 'Residence Hall B',
-        latitude: -25.7690,
-        longitude: 28.2310,
-        order: 4,
-        routeId: 'residence',
-      ),
-    ];
-
-    return [
-      ShuttleRoute(
-        id: 'campus_loop',
-        name: 'Campus Loop',
-        description: 'Circular route around the University of Pretoria campus',
-        colorHex: 'FF14532D',
-        stops: campusLoopStops,
-        polylineCoordinates: _polylineFromStops(campusLoopStops, isLoop: true),
-      ),
-      ShuttleRoute(
-        id: 'city_express',
-        name: 'City Express',
-        description:
-            'Express route from campus to the city center',
-        colorHex: 'FF1565C0',
-        stops: cityExpressStops,
-        polylineCoordinates: _polylineFromStops(cityExpressStops),
-      ),
-      ShuttleRoute(
-        id: 'residence',
-        name: 'Residence Route',
-        description: 'Route connecting campus to student residences',
-        colorHex: 'FFF57C00',
-        stops: residenceStops,
-        polylineCoordinates: _polylineFromStops(residenceStops),
-      ),
-    ];
-  }
-
-  /// Generates a polyline from stop coordinates, optionally closing the loop.
-  List<List<double>> _polylineFromStops(
-    List<BusStop> stops, {
-    bool isLoop = false,
-  }) {
-    final points = <List<double>>[];
-    for (final stop in stops) {
-      points.add([stop.latitude, stop.longitude]);
+  Future<void> _ensureInitialized() async {
+    if (!_initialized) {
+      await init();
     }
-    if (isLoop && stops.length > 1) {
-      points.add([stops.first.latitude, stops.first.longitude]);
-    }
-    return points;
   }
 
-  /// Builds dense waypoints for smooth simulation movement.
-  /// Inserts 4 interpolated points between each consecutive stop pair.
-  List<List<double>> _buildWaypointsForRoute(ShuttleRoute route) {
-    final stops = route.stops;
-    final isLoop = route.id == 'campus_loop';
-    final waypoints = <List<double>>[];
+  Future<List<ShuttleRoute>> _buildRoutes() async {
+    final cToKSBStops = [
+      const BusStop(
+        id: 'c2KSB_stop_1',
+        name: 'Commercial Area',
+        latitude: 6.682740,
+        longitude: -1.576994,
+        order: 1,
+        routeId: 'c2KSB',
+      ),
+      const BusStop(
+        id: 'c2KSB_stop_2',
+        name: 'Hall 7 Front',
+        latitude: 6.679293,
+        longitude: -1.572800,
+        order: 2,
+        routeId: 'c2KSB',
+      ),
+      const BusStop(
+        id: 'c2KSB_stop_3',
+        name: 'Pharmacy Stop',
+        latitude: 6.674538,
+        longitude: -1.567575,
+        order: 3,
+        routeId: 'c2KSB',
+      ),
+      const BusStop(
+        id: 'c2KSB_stop_4',
+        name: 'KSB Stop',
+        latitude: 6.669322,
+        longitude: -1.567175,
+        order: 4,
+        routeId: 'c2KSB',
+      ),
+    ];
 
-    final stopCount = stops.length;
-    final segmentCount = isLoop ? stopCount : stopCount - 1;
+    final brunei2KSBStops = [
+      const BusStop(
+        id: 'brunei2KSB_stop_1',
+        name: 'Brunei',
+        latitude: 6.670441,
+        longitude: -1.574152,
+        order: 1,
+        routeId: 'brunei2KSB',
+      ),
+      const BusStop(
+        id: 'brunei2KSB_stop_2',
+        name: 'Prempeh II Library',
+        latitude: 6.675086,
+        longitude: -1.572899,
+        order: 2,
+        routeId: 'brunei2KSB',
+      ),
+      const BusStop(
+        id: 'brunei2KSB_stop_3',
+        name: 'Pharmacy Stop',
+        latitude: 6.674538,
+        longitude: -1.567575,
+        order: 3,
+        routeId: 'brunei2KSB',
+      ),
+      const BusStop(
+        id: 'brunei2KSB_stop_4',
+        name: 'KSB Stop',
+        latitude: 6.669322,
+        longitude: -1.567175,
+        order: 4,
+        routeId: 'brunei2KSB',
+      ),
+    ];
 
-    for (var i = 0; i < segmentCount; i++) {
-      final from = stops[i];
-      final to = stops[(i + 1) % stopCount];
+    final agric2MVillageStops = [
+      const BusStop(
+        id: 'agric2MVillage_stop_1',
+        name: 'Agric Stop',
+        latitude: 6.674820,
+        longitude: -1.566526,
+        order: 1,
+        routeId: 'agric2MVillage',
+      ),
+      const BusStop(
+        id: 'agric2MVillage_stop_2',
+        name: 'Gaza',
+        latitude: 6.687602,
+        longitude: -1.557034,
+        order: 2,
+        routeId: 'agric2MVillage',
+      ),
+      const BusStop(
+        id: 'agric2MVillage_stop_3',
+        name: 'Medical Village',
+        latitude: 6.681121,
+        longitude: -1.549854,
+        order: 3,
+        routeId: 'agric2MVillage',
+      ),
+    ];
 
-      waypoints.add([from.latitude, from.longitude]);
-
-      final interpolated = GeoUtils.interpolate(
-        from.latitude,
-        from.longitude,
-        to.latitude,
-        to.longitude,
-        4,
-      );
-      for (final point in interpolated) {
-        waypoints.add([point.$1, point.$2]);
+    Future<List<List<double>>> realPolyline(List<BusStop> stops) async {
+      final coords = stops.map((s) => [s.latitude, s.longitude]).toList();
+      try {
+        return await _directionsService.getRoutePolyline(stops: coords);
+      } catch (_) {
+        // Fallback: connect stops directly if API fails
+        return coords;
       }
     }
 
-    // For non-loop routes, include the final stop
-    if (!isLoop) {
-      final last = stops.last;
-      waypoints.add([last.latitude, last.longitude]);
-    }
+    final c2KSBPolyline = await realPolyline(cToKSBStops);
+    final bruneiPolyline = await realPolyline(brunei2KSBStops);
+    final agricPolyline = await realPolyline(agric2MVillageStops);
 
-    return waypoints;
+    return [
+      ShuttleRoute(
+        id: 'c2KSB',
+        name: 'Commercial Area - KSB',
+        description: 'Route from Commercial Area to KSB',
+        colorHex: 'FF14532D',
+        stops: cToKSBStops,
+        polylineCoordinates: c2KSBPolyline,
+      ),
+      ShuttleRoute(
+        id: 'brunei2KSB',
+        name: 'Brunei - KSB',
+        description: 'Route from Brunei to KSB',
+        colorHex: 'FF1565C0',
+        stops: brunei2KSBStops,
+        polylineCoordinates: bruneiPolyline,
+      ),
+      ShuttleRoute(
+        id: 'agric2MVillage',
+        name: 'Agric - Medical Village',
+        description: 'Route from Agric to Medical Village',
+        colorHex: 'FFF57C00',
+        stops: agric2MVillageStops,
+        polylineCoordinates: agricPolyline,
+      ),
+    ];
+  }
+
+  /// Build simulation waypoints from the decoded road polyline.
+  /// This follows roads instead of straight stop-to-stop interpolation.
+  List<List<double>> _buildWaypointsForRoute(ShuttleRoute route) {
+    final polyline = route.polylineCoordinates;
+    if (polyline.isEmpty) return [];
+    return polyline;
   }
 
   List<Shuttle> _buildShuttles() {
@@ -236,34 +197,26 @@ class MockTrackingDatasource {
     return [
       Shuttle(
         id: 'shuttle_1',
-        name: 'Shuttle A',
-        routeId: 'campus_loop',
-        latitude: -25.7530,
-        longitude: 28.2290,
+        name: 'Commercial Area - KSB',
+        routeId: 'c2KSB',
+        latitude: 6.682740,
+        longitude: -1.576994,
         lastUpdated: now,
       ),
       Shuttle(
         id: 'shuttle_2',
-        name: 'Shuttle B',
-        routeId: 'city_express',
-        latitude: -25.7500,
-        longitude: 28.2320,
+        name: 'Brunei - KSB',
+        routeId: 'brunei2KSB',
+        latitude: 6.670441,
+        longitude: -1.574152,
         lastUpdated: now,
       ),
       Shuttle(
         id: 'shuttle_3',
-        name: 'Shuttle C',
-        routeId: 'residence',
-        latitude: -25.7600,
-        longitude: 28.2330,
-        lastUpdated: now,
-      ),
-      Shuttle(
-        id: 'shuttle_4',
-        name: 'Shuttle D',
-        routeId: 'campus_loop',
-        latitude: -25.7530,
-        longitude: 28.2290,
+        name: 'Agric - Medical Village',
+        routeId: 'agric2MVillage',
+        latitude: 6.674820,
+        longitude: -1.566526,
         lastUpdated: now,
       ),
     ];
@@ -320,13 +273,15 @@ class MockTrackingDatasource {
       );
       final speed = tickSeconds > 0 ? distance / tickSeconds : 0.0;
 
-      updated.add(shuttle.copyWith(
-        latitude: nextLat,
-        longitude: nextLng,
-        heading: heading,
-        speed: speed,
-        lastUpdated: DateTime.now(),
-      ));
+      updated.add(
+        shuttle.copyWith(
+          latitude: nextLat,
+          longitude: nextLng,
+          heading: heading,
+          speed: speed,
+          lastUpdated: DateTime.now(),
+        ),
+      );
     }
 
     _currentShuttlePositions = updated;
@@ -335,23 +290,21 @@ class MockTrackingDatasource {
 
   Stream<List<Shuttle>> watchShuttlesOnRoute(String routeId) {
     return _shuttleStreamController.stream.map(
-      (shuttles) =>
-          shuttles.where((s) => s.routeId == routeId).toList(),
+      (shuttles) => shuttles.where((s) => s.routeId == routeId).toList(),
     );
   }
 
   Future<List<Shuttle>> getActiveShuttles() async {
-    return _currentShuttlePositions
-        .where((s) => s.isActive)
-        .toList();
+    await _ensureInitialized();
+    return _currentShuttlePositions.where((s) => s.isActive).toList();
   }
 
-  Future<List<ShuttleRoute>> getRoutes() async => _routes;
+  Future<List<ShuttleRoute>> getRoutes() async =>
+      await _ensureInitialized().then((_) => _routes);
 
   Future<ShuttleRoute?> getRoute(String routeId) async {
-    return _routes
-        .where((r) => r.id == routeId)
-        .firstOrNull;
+    await _ensureInitialized();
+    return _routes.where((r) => r.id == routeId).firstOrNull;
   }
 
   void stopSimulation() {

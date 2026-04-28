@@ -10,39 +10,36 @@ class RouteBloc extends Bloc<RouteEvent, RouteState> {
   final RouteRepository _routeRepository;
 
   RouteBloc({required RouteRepository routeRepository})
-      : _routeRepository = routeRepository,
-        super(const RouteInitial()) {
+    : _routeRepository = routeRepository,
+      super(const RouteInitial()) {
     on<LoadRoutes>(_onLoadRoutes);
     on<SelectRoute>(_onSelectRoute);
   }
 
-  Future<void> _onLoadRoutes(
-    LoadRoutes event,
-    Emitter<RouteState> emit,
-  ) async {
+  Future<void> _onLoadRoutes(LoadRoutes event, Emitter<RouteState> emit) async {
     emit(const RouteLoading());
 
     try {
       final routes = await _routeRepository.getRoutes();
+      if (routes.isEmpty) {
+        emit(const RouteEmpty());
+        return;
+      }
       emit(RouteLoaded(routes: routes));
     } catch (e) {
       emit(RouteError(e.toString()));
     }
   }
 
-  void _onSelectRoute(
-    SelectRoute event,
-    Emitter<RouteState> emit,
-  ) {
+  void _onSelectRoute(SelectRoute event, Emitter<RouteState> emit) {
     final currentState = state;
     if (currentState is RouteLoaded) {
       final selectedRoute = currentState.routes.firstWhere(
         (route) => route.id == event.routeId,
       );
-      emit(RouteLoaded(
-        routes: currentState.routes,
-        selectedRoute: selectedRoute,
-      ));
+      emit(
+        RouteLoaded(routes: currentState.routes, selectedRoute: selectedRoute),
+      );
     }
   }
 }
