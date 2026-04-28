@@ -48,6 +48,9 @@ class DirectionsService {
 
     final overview = routes.first['overview_polyline'] as Map<String, dynamic>?;
     final encoded = overview?['points'] as String?;
+    print('\n\n--- ENCODED POLYLINE STRING ---');
+    print(encoded);
+    print('-------------------------------\n\n');
     if (encoded == null || encoded.isEmpty) return [];
 
     // Call the static method

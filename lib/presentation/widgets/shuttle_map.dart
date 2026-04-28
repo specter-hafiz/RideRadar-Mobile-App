@@ -15,9 +15,31 @@ class ShuttleMap extends StatefulWidget {
 
 class _ShuttleMapState extends State<ShuttleMap> {
   GoogleMapController? _mapController;
+  BitmapDescriptor? _busStopIcon;
 
   static const _defaultCenter = LatLng(6.6752095, -1.5708816);
   static const _defaultZoom = 16.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCustomMarker();
+  }
+
+  // Load the image once when the screen starts
+  Future<void> _loadCustomMarker() async {
+    final icon = await BitmapDescriptor.asset(
+      const ImageConfiguration(
+        size: Size(38, 38),
+      ), // You can tweak the size here
+      'assets/icons/shuttle-stop.png',
+    );
+
+    // Call setState to trigger a rebuild of the map with the new icon
+    setState(() {
+      _busStopIcon = icon;
+    });
+  }
 
   @override
   void didUpdateWidget(covariant ShuttleMap oldWidget) {
@@ -85,21 +107,24 @@ class _ShuttleMapState extends State<ShuttleMap> {
     final markers = <Marker>{};
     final route = widget.route;
 
+    // 1. Build Bus Stop Markers
     if (route != null) {
       for (final stop in route.stops) {
         markers.add(
           Marker(
             markerId: MarkerId('stop_${stop.id}'),
             position: LatLng(stop.latitude, stop.longitude),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueRed,
-            ),
+            // Use custom icon if loaded, otherwise fallback to default red hue
+            icon:
+                _busStopIcon ??
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
             infoWindow: InfoWindow(title: stop.name),
           ),
         );
       }
     }
 
+    // 2. Build Shuttle (Bus) Markers
     for (final shuttle in widget.shuttles) {
       markers.add(
         Marker(
@@ -135,7 +160,7 @@ class _ShuttleMapState extends State<ShuttleMap> {
         }
       },
       polylines: _buildPolylines(),
-      markers: _buildMarkers(),
+      markers: _buildMarkers(), // This now calls your updated logic
       myLocationButtonEnabled: false,
       zoomControlsEnabled: false,
       mapToolbarEnabled: false,
