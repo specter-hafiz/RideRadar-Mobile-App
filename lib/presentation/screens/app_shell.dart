@@ -92,32 +92,40 @@ class _AppShellState extends State<AppShell> {
             SettingsScreen(),
           ],
         ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _currentIndex,
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          onDestinationSelected: _switchToTab,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home_rounded),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.route_outlined),
-              selectedIcon: Icon(Icons.route_rounded),
-              label: 'Routes',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.notifications_outlined),
-              selectedIcon: Icon(Icons.notifications_rounded),
-              label: 'Alerts',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.settings_outlined),
-              selectedIcon: Icon(Icons.settings_rounded),
-              label: 'Settings',
-            ),
-          ],
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              NavigationBar(
+                selectedIndex: _currentIndex,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                onDestinationSelected: _switchToTab,
+                destinations: const [
+                  NavigationDestination(
+                    icon: Icon(Icons.home_outlined),
+                    selectedIcon: Icon(Icons.home_rounded),
+                    label: 'Home',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.route_outlined),
+                    selectedIcon: Icon(Icons.route_rounded),
+                    label: 'Routes',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.notifications_outlined),
+                    selectedIcon: Icon(Icons.notifications_rounded),
+                    label: 'Alerts',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.settings_outlined),
+                    selectedIcon: Icon(Icons.settings_rounded),
+                    label: 'Settings',
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -30,6 +30,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     on<StartTracking>(_onStartTracking);
     on<StopTracking>(_onStopTracking);
     on<_ShuttlePositionsUpdated>(_onShuttlePositionsUpdated);
+    on<_TrackingStreamError>(_onTrackingStreamError);
   }
 
   Future<void> _onStartTracking(
@@ -50,9 +51,14 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
 
       _shuttleSubscription = _shuttleRepository
           .watchShuttlesOnRoute(event.routeId)
-          .listen((shuttles) {
-            add(_ShuttlePositionsUpdated(shuttles: shuttles, route: route));
-          });
+          .listen(
+            (shuttles) {
+              add(_ShuttlePositionsUpdated(shuttles: shuttles, route: route));
+            },
+            onError: (error, stackTrace) {
+              add(_TrackingStreamError(error.toString()));
+            },
+          );
     } catch (e) {
       emit(TrackingError(e.toString()));
     }
@@ -110,9 +116,25 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     );
   }
 
+  void _onTrackingStreamError(
+    _TrackingStreamError event,
+    Emitter<TrackingState> emit,
+  ) {
+    emit(TrackingError(event.message));
+  }
+
   @override
   Future<void> close() async {
     await _shuttleSubscription?.cancel();
     return super.close();
   }
+}
+
+final class _TrackingStreamError extends TrackingEvent {
+  final String message;
+
+  const _TrackingStreamError(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }

@@ -4,7 +4,7 @@ import 'package:shuttletrack/core/services/directions_service.dart';
 import 'package:shuttletrack/core/services/notification_service.dart';
 import 'package:shuttletrack/data/datasources/firestore_shuttle_datasource.dart';
 import 'package:shuttletrack/data/datasources/local_settings_datasource.dart';
-import 'package:shuttletrack/data/datasources/mock_tracking_datasource.dart';
+import 'package:shuttletrack/data/datasources/realtime_database_shuttle_datasource.dart';
 import 'package:shuttletrack/data/repositories/route_repository_impl.dart';
 import 'package:shuttletrack/data/repositories/settings_repository_impl.dart';
 import 'package:shuttletrack/data/repositories/shuttle_repository_impl.dart';
@@ -14,6 +14,7 @@ import 'package:shuttletrack/domain/repositories/shuttle_repository.dart';
 import 'package:shuttletrack/presentation/bloc/alert/alert_bloc.dart';
 import 'package:shuttletrack/presentation/bloc/route/route_bloc.dart';
 import 'package:shuttletrack/presentation/bloc/settings/settings_bloc.dart';
+import 'package:shuttletrack/presentation/bloc/network/network_cubit.dart';
 import 'package:shuttletrack/presentation/bloc/tracking/tracking_bloc.dart';
 
 final sl = GetIt.instance;
@@ -24,6 +25,7 @@ Future<void> initDependencies() async {
 
   // Datasources
   sl.registerLazySingleton(() => FirestoreShuttleDatasource());
+  sl.registerLazySingleton(() => RealtimeDatabaseShuttleDatasource());
   sl.registerLazySingleton(
     () => LocalSettingsDatasource(sl<SharedPreferences>()),
   );
@@ -32,7 +34,7 @@ Future<void> initDependencies() async {
   );
   // Repositories
   sl.registerLazySingleton<ShuttleRepository>(
-    () => ShuttleRepositoryImpl(sl<FirestoreShuttleDatasource>()),
+    () => ShuttleRepositoryImpl(sl<RealtimeDatabaseShuttleDatasource>()),
   );
   sl.registerLazySingleton<RouteRepository>(
     () => RouteRepositoryImpl(sl<FirestoreShuttleDatasource>()),
@@ -58,4 +60,5 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(
     () => SettingsBloc(settingsRepository: sl<SettingsRepository>()),
   );
+  sl.registerLazySingleton(() => NetworkCubit());
 }

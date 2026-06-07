@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shuttletrack/core/services/directions_service.dart';
 import 'package:shuttletrack/domain/entities/bus_stop.dart';
-import 'package:shuttletrack/domain/entities/shuttle.dart';
 import 'package:shuttletrack/domain/entities/shuttle_route.dart';
 
 class FirestoreShuttleDatasource {
@@ -9,31 +8,6 @@ class FirestoreShuttleDatasource {
 
   FirestoreShuttleDatasource({FirebaseFirestore? firestore})
     : _firestore = firestore ?? FirebaseFirestore.instance;
-
-  Stream<List<Shuttle>> watchShuttlesOnRoute(String routeId) {
-    return _firestore
-        .collection('shuttles')
-        .where('routeId', isEqualTo: routeId)
-        .where('isActive', isEqualTo: true)
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs.map((doc) {
-            final data = doc.data();
-            final location = data['location'] as GeoPoint;
-            return Shuttle(
-              id: doc.id,
-              name: data['name'] as String,
-              routeId: data['routeId'] as String,
-              latitude: location.latitude,
-              longitude: location.longitude,
-              heading: (data['heading'] as num).toDouble(),
-              speed: (data['speed'] as num).toDouble(),
-              isActive: data['isActive'] as bool,
-              lastUpdated: (data['lastUpdated'] as Timestamp).toDate(),
-            );
-          }).toList(),
-        );
-  }
 
   Future<List<ShuttleRoute>> getRoutes() async {
     final routeSnap = await _firestore

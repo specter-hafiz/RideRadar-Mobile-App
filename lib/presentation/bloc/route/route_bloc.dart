@@ -20,12 +20,26 @@ class RouteBloc extends Bloc<RouteEvent, RouteState> {
     emit(const RouteLoading());
 
     try {
+      final previousSelectionId = state is RouteLoaded
+          ? (state as RouteLoaded).selectedRoute?.id
+          : null;
       final routes = await _routeRepository.getRoutes();
       if (routes.isEmpty) {
         emit(const RouteEmpty());
         return;
       }
-      emit(RouteLoaded(routes: routes));
+
+      ShuttleRoute? selectedRoute;
+      if (previousSelectionId != null) {
+        for (final route in routes) {
+          if (route.id == previousSelectionId) {
+            selectedRoute = route;
+            break;
+          }
+        }
+      }
+
+      emit(RouteLoaded(routes: routes, selectedRoute: selectedRoute));
     } catch (e) {
       emit(RouteError(e.toString()));
     }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shuttletrack/domain/entities/bus_stop.dart';
 import 'package:shuttletrack/domain/entities/shuttle.dart';
 import 'package:shuttletrack/domain/entities/shuttle_route.dart';
+import 'package:shuttletrack/core/utils/responsive.dart';
 
 class ShuttleInfoCard extends StatelessWidget {
   final ShuttleRoute route;
@@ -22,10 +23,9 @@ class ShuttleInfoCard extends StatelessWidget {
     final activeCount = shuttles.where((s) => s.isActive).length;
 
     return Card(
-      color: theme.colorScheme.surface,
-      elevation: 4,
+      elevation: 0,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(rs(context, 18)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,26 +33,33 @@ class ShuttleInfoCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 14,
-                  height: 14,
+                  width: rs(context, 14),
+                  height: rs(context, 14),
                   decoration: BoxDecoration(
                     color: routeColor,
                     shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: routeColor.withValues(alpha: 0.35),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: rs(context, 10)),
                 Expanded(
                   child: Text(
                     route.name,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: rs(context, 10),
+                    vertical: rs(context, 4),
                   ),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primaryContainer,
@@ -62,37 +69,38 @@ class ShuttleInfoCard extends StatelessWidget {
                     '$activeCount active',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: theme.colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: rs(context, 12)),
             if (proximityMap.isNotEmpty)
               ...proximityMap.entries.map((entry) {
-                final shuttle = shuttles
-                    .where((s) => s.id == entry.key)
-                    .firstOrNull;
+                final shuttle = shuttles.where((s) => s.id == entry.key).isEmpty
+                    ? null
+                    : shuttles.firstWhere((s) => s.id == entry.key);
                 if (shuttle == null) return const SizedBox.shrink();
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
+                  padding: EdgeInsets.only(bottom: rs(context, 4)),
                   child: Row(
                     children: [
                       Container(
-                        width: 8,
-                        height: 8,
+                        width: rs(context, 8),
+                        height: rs(context, 8),
                         decoration: const BoxDecoration(
                           color: Colors.green,
                           shape: BoxShape.circle,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: rs(context, 8)),
                       Expanded(
                         child: Text(
                           '${shuttle.name} at ${entry.value.name}',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
+                            height: 1.3,
                           ),
                         ),
                       ),
@@ -105,6 +113,7 @@ class ShuttleInfoCard extends StatelessWidget {
                 'Tracking $activeCount shuttle${activeCount == 1 ? '' : 's'}...',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
+                  height: 1.3,
                 ),
               ),
           ],
