@@ -7,4 +7,7 @@ abstract class SettingsRepository {
   Future<void> setOnboardingCompleted(bool completed);
   Future<String?> getSelectedRouteId();
   Future<void> setSelectedRouteId(String? routeId);
+  Future<String?> getUserRefNumber();
+  Future<void> setUserRefNumber(String refNumber);
+  Future<void> clearUserRefNumber();
 }

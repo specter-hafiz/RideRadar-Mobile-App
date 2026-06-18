@@ -37,4 +37,14 @@ class SettingsRepositoryImpl implements SettingsRepository {
   @override
   Future<void> setSelectedRouteId(String? routeId) =>
       _datasource.setSelectedRouteId(routeId);
+
+  @override
+  Future<String?> getUserRefNumber() async => _datasource.getUserRefNumber();
+
+  @override
+  Future<void> setUserRefNumber(String refNumber) =>
+      _datasource.setUserRefNumber(refNumber);
+
+  @override
+  Future<void> clearUserRefNumber() => _datasource.clearUserRefNumber();
 }

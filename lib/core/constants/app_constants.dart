@@ -11,4 +11,5 @@ class AppConstants {
   static const String keyGeofenceRadius = 'geofence_radius';
   static const String keyOnboardingCompleted = 'onboarding_completed';
   static const String keySelectedRouteId = 'selected_route_id';
+  static const String keyUserRefNumber = 'user_ref_number';
 }

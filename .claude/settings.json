@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(flutter analyze --no-pub 2>&1)",
+      "PowerShell(flutter build apk --release 2>&1)",
+      "PowerShell(flutter pub get 2>&1)",
+      "PowerShell(flutter analyze lib/presentation/screens/login_screen.dart 2>&1)",
+      "PowerShell(flutter --version)",
+      "PowerShell(flutter devices)",
+      "PowerShell(flutter analyze 2>&1)",
+      "PowerShell(flutter test 2>&1)",
+      "PowerShell(flutter run -d chrome --web-port=5599 2>&1 | Tee-Object -FilePath \"$env:TEMP\\\\shuttletrack_run.log\")",
+      "Bash(grep -qE 'is being served|Flutter run key|Error|Exception|Failed|lib/main.dart' C:/Users/huaru/AppData/Local/Temp/claude/c--Users-huaru-shuttletrack/1767aee0-90f9-4caf-a9ea-12df10efdf19/tasks/btpxdg1pj.output)",
+      "Bash(sleep 1)",
+      "Bash(echo \"=== matched, current tail ===\")",
+      "Bash(tail -20 C:/Users/huaru/AppData/Local/Temp/claude/c--Users-huaru-shuttletrack/1767aee0-90f9-4caf-a9ea-12df10efdf19/tasks/btpxdg1pj.output)",
+      "Read(//c/Users/huaru/AppData/Local/Temp/**)",
+      "PowerShell(flutter run -d chrome --web-port=5599 2>&1 | Tee-Object -FilePath \"$env:TEMP\\\\shuttletrack_run2.log\")",
+      "PowerShell(flutter run -d chrome --web-port=5599 2>&1 | Tee-Object -FilePath \"$env:TEMP\\\\shuttletrack_run3.log\")"
+    ]
+  }
+}

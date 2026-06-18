@@ -1,4 +1,4 @@
-package com.example.shuttletrack
+package com.huaru.rideradar
 
 import io.flutter.embedding.android.FlutterActivity
 

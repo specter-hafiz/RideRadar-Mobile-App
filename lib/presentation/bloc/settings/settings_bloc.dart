@@ -16,6 +16,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     on<UpdateGeofenceRadius>(_onUpdateGeofenceRadius);
     on<CompleteOnboarding>(_onCompleteOnboarding);
     on<UpdateSelectedRoute>(_onUpdateSelectedRoute);
+    on<SetUserRefNumber>(_onSetUserRefNumber);
+    on<ClearUserRefNumber>(_onClearUserRefNumber);
   }
 
   Future<void> _onLoadSettings(
@@ -28,12 +30,14 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     final onboardingCompleted =
         await _settingsRepository.getOnboardingCompleted();
     final selectedRouteId = await _settingsRepository.getSelectedRouteId();
+    final userRefNumber = await _settingsRepository.getUserRefNumber();
 
     emit(SettingsLoaded(
       notificationsEnabled: notificationsEnabled,
       geofenceRadius: geofenceRadius,
       onboardingCompleted: onboardingCompleted,
       selectedRouteId: selectedRouteId,
+      userRefNumber: userRefNumber,
     ));
   }
 
@@ -50,6 +54,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         geofenceRadius: currentState.geofenceRadius,
         onboardingCompleted: currentState.onboardingCompleted,
         selectedRouteId: currentState.selectedRouteId,
+        userRefNumber: currentState.userRefNumber,
       ));
     }
   }
@@ -66,6 +71,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         geofenceRadius: event.meters,
         onboardingCompleted: currentState.onboardingCompleted,
         selectedRouteId: currentState.selectedRouteId,
+        userRefNumber: currentState.userRefNumber,
       ));
     }
   }
@@ -82,6 +88,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         geofenceRadius: currentState.geofenceRadius,
         onboardingCompleted: true,
         selectedRouteId: currentState.selectedRouteId,
+        userRefNumber: currentState.userRefNumber,
       ));
     }
   }
@@ -98,6 +105,41 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         geofenceRadius: currentState.geofenceRadius,
         onboardingCompleted: currentState.onboardingCompleted,
         selectedRouteId: event.routeId,
+        userRefNumber: currentState.userRefNumber,
+      ));
+    }
+  }
+
+  Future<void> _onSetUserRefNumber(
+    SetUserRefNumber event,
+    Emitter<SettingsState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is SettingsLoaded) {
+      await _settingsRepository.setUserRefNumber(event.refNumber);
+      emit(SettingsLoaded(
+        notificationsEnabled: currentState.notificationsEnabled,
+        geofenceRadius: currentState.geofenceRadius,
+        onboardingCompleted: currentState.onboardingCompleted,
+        selectedRouteId: currentState.selectedRouteId,
+        userRefNumber: event.refNumber,
+      ));
+    }
+  }
+
+  Future<void> _onClearUserRefNumber(
+    ClearUserRefNumber event,
+    Emitter<SettingsState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is SettingsLoaded) {
+      await _settingsRepository.clearUserRefNumber();
+      emit(SettingsLoaded(
+        notificationsEnabled: currentState.notificationsEnabled,
+        geofenceRadius: currentState.geofenceRadius,
+        onboardingCompleted: currentState.onboardingCompleted,
+        selectedRouteId: currentState.selectedRouteId,
+        userRefNumber: null,
       ));
     }
   }

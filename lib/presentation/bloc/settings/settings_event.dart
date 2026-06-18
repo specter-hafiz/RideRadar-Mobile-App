@@ -31,3 +31,14 @@ final class UpdateSelectedRoute extends SettingsEvent {
   @override
   List<Object?> get props => [routeId];
 }
+
+final class SetUserRefNumber extends SettingsEvent {
+  final String refNumber;
+  const SetUserRefNumber(this.refNumber);
+  @override
+  List<Object?> get props => [refNumber];
+}
+
+final class ClearUserRefNumber extends SettingsEvent {
+  const ClearUserRefNumber();
+}

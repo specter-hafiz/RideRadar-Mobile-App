@@ -10,6 +10,7 @@ import 'package:shuttletrack/presentation/bloc/route/route_bloc.dart';
 import 'package:shuttletrack/presentation/bloc/settings/settings_bloc.dart';
 import 'package:shuttletrack/presentation/bloc/tracking/tracking_bloc.dart';
 import 'package:shuttletrack/presentation/screens/app_shell.dart';
+import 'package:shuttletrack/presentation/screens/login_screen.dart';
 import 'package:shuttletrack/presentation/screens/onboarding_screen.dart';
 
 class RideRadarApp extends StatelessWidget {
@@ -51,25 +52,26 @@ class _AppEntryState extends State<_AppEntry> {
     return BlocBuilder<SettingsBloc, SettingsState>(
       builder: (context, state) {
         if (state is SettingsLoaded) {
-          return state.onboardingCompleted
-              ? const AppShell()
-              : const OnboardingScreen();
+          if (!state.onboardingCompleted) return const OnboardingScreen();
+          if (state.userRefNumber == null) return const LoginScreen();
+          return const AppShell();
         }
 
-        return const Scaffold(body: _StartupLoadingView());
+        return const Scaffold(body: StartupLoadingView());
       },
     );
   }
 }
 
-class _StartupLoadingView extends StatefulWidget {
-  const _StartupLoadingView();
+/// The branded loading view shown on startup while settings load.
+class StartupLoadingView extends StatefulWidget {
+  const StartupLoadingView({super.key});
 
   @override
-  State<_StartupLoadingView> createState() => _StartupLoadingViewState();
+  State<StartupLoadingView> createState() => _StartupLoadingViewState();
 }
 
-class _StartupLoadingViewState extends State<_StartupLoadingView>
+class _StartupLoadingViewState extends State<StartupLoadingView>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 

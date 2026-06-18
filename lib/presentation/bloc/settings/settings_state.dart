@@ -15,12 +15,14 @@ final class SettingsLoaded extends SettingsState {
   final double geofenceRadius;
   final bool onboardingCompleted;
   final String? selectedRouteId;
+  final String? userRefNumber;
 
   const SettingsLoaded({
     required this.notificationsEnabled,
     required this.geofenceRadius,
     required this.onboardingCompleted,
     this.selectedRouteId,
+    this.userRefNumber,
   });
 
   @override
@@ -29,5 +31,6 @@ final class SettingsLoaded extends SettingsState {
         geofenceRadius,
         onboardingCompleted,
         selectedRouteId,
+        userRefNumber,
       ];
 }

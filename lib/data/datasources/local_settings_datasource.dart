@@ -34,4 +34,13 @@ class LocalSettingsDatasource {
     }
     return _prefs.setString(AppConstants.keySelectedRouteId, routeId);
   }
+
+  String? getUserRefNumber() =>
+      _prefs.getString(AppConstants.keyUserRefNumber);
+
+  Future<void> setUserRefNumber(String refNumber) =>
+      _prefs.setString(AppConstants.keyUserRefNumber, refNumber);
+
+  Future<void> clearUserRefNumber() =>
+      _prefs.remove(AppConstants.keyUserRefNumber);
 }

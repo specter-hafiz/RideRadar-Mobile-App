@@ -25,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -52,24 +46,49 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1036275465121',
     projectId: 'shuttletrack-1aecf',
     authDomain: 'shuttletrack-1aecf.firebaseapp.com',
+    databaseURL: 'https://shuttletrack-1aecf-default-rtdb.firebaseio.com',
     storageBucket: 'shuttletrack-1aecf.firebasestorage.app',
     measurementId: 'G-VWE0NT61QX',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCo_Ty7nOQeXu_GmJ23-CLjhhULWlvLSWU',
-    appId: '1:1036275465121:android:de43985e1b57c4a9d529e0',
+    appId: '1:1036275465121:android:ee86800f8dd8c070d529e0',
     messagingSenderId: '1036275465121',
     projectId: 'shuttletrack-1aecf',
+    databaseURL: 'https://shuttletrack-1aecf-default-rtdb.firebaseio.com',
     storageBucket: 'shuttletrack-1aecf.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBv5dHttSiCtoDdtQrjgG6knOVf8iLbFHM',
-    appId: '1:1036275465121:ios:821ce0404e45afa9d529e0',
+    appId: '1:1036275465121:ios:306fb1e893f7c5aed529e0',
     messagingSenderId: '1036275465121',
     projectId: 'shuttletrack-1aecf',
+    databaseURL: 'https://shuttletrack-1aecf-default-rtdb.firebaseio.com',
     storageBucket: 'shuttletrack-1aecf.firebasestorage.app',
-    iosBundleId: 'com.example.shuttletrack',
+    iosBundleId: 'com.huaru.rideradar',
   );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyBv5dHttSiCtoDdtQrjgG6knOVf8iLbFHM',
+    appId: '1:1036275465121:ios:306fb1e893f7c5aed529e0',
+    messagingSenderId: '1036275465121',
+    projectId: 'shuttletrack-1aecf',
+    databaseURL: 'https://shuttletrack-1aecf-default-rtdb.firebaseio.com',
+    storageBucket: 'shuttletrack-1aecf.firebasestorage.app',
+    iosBundleId: 'com.huaru.rideradar',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyAsoZtOnlG9id7ey9vF_gh0kEXJi2NjGGo',
+    appId: '1:1036275465121:web:f4af6053adf4c39cd529e0',
+    messagingSenderId: '1036275465121',
+    projectId: 'shuttletrack-1aecf',
+    authDomain: 'shuttletrack-1aecf.firebaseapp.com',
+    databaseURL: 'https://shuttletrack-1aecf-default-rtdb.firebaseio.com',
+    storageBucket: 'shuttletrack-1aecf.firebasestorage.app',
+    measurementId: 'G-78BMKW5G5F',
+  );
+
 }
