@@ -37,7 +37,10 @@ Future<void> initDependencies() async {
     () => ShuttleRepositoryImpl(sl<RealtimeDatabaseShuttleDatasource>()),
   );
   sl.registerLazySingleton<RouteRepository>(
-    () => RouteRepositoryImpl(sl<FirestoreShuttleDatasource>()),
+    () => RouteRepositoryImpl(
+      sl<FirestoreShuttleDatasource>(),
+      sl<DirectionsService>(),
+    ),
   );
   sl.registerLazySingleton<SettingsRepository>(
     () => SettingsRepositoryImpl(sl<LocalSettingsDatasource>()),

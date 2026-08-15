@@ -42,7 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _openPrivacyPolicy() async {
     final uri = Uri.parse(_privacyPolicyUrl);
-    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    // platformDefault opens a new tab on web and the external browser on mobile.
+    final ok = await launchUrl(uri, mode: LaunchMode.platformDefault);
     if (!ok && mounted) {
       setState(() => _error = 'Could not open the Privacy Policy. Try again.');
     }

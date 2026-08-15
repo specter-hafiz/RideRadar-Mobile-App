@@ -202,6 +202,11 @@ class _ShuttleMapState extends State<ShuttleMap>
         .map((c) => LatLng(c[0], c[1]))
         .toList();
 
+    // ignore: avoid_print
+    print('[ShuttleMap] drawing ${points.length} polyline points. '
+        'first=${points.isNotEmpty ? points.first : "none"}, '
+        'last=${points.isNotEmpty ? points.last : "none"}');
+
     return {
       // Shadow polyline for depth
       Polyline(
@@ -216,7 +221,6 @@ class _ShuttleMapState extends State<ShuttleMap>
         points: points,
         color: color,
         width: 5,
-        patterns: [],
       ),
     };
   }

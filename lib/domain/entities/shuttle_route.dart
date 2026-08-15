@@ -20,6 +20,26 @@ class ShuttleRoute extends Equatable {
     this.isActive = true,
   });
 
+  ShuttleRoute copyWith({
+    String? id,
+    String? name,
+    String? description,
+    String? colorHex,
+    List<BusStop>? stops,
+    List<List<double>>? polylineCoordinates,
+    bool? isActive,
+  }) {
+    return ShuttleRoute(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      colorHex: colorHex ?? this.colorHex,
+      stops: stops ?? this.stops,
+      polylineCoordinates: polylineCoordinates ?? this.polylineCoordinates,
+      isActive: isActive ?? this.isActive,
+    );
+  }
+
   @override
   List<Object?> get props => [
         id, name, description, colorHex, stops,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:shuttletrack/presentation/bloc/settings/settings_bloc.dart';
-import 'package:shuttletrack/presentation/screens/app_shell.dart';
 import 'package:shuttletrack/presentation/widgets/app_backdrop.dart';
 import 'package:shuttletrack/core/utils/responsive.dart';
 
@@ -39,10 +38,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _onNext() {
     if (_isLastPage) {
+      // Fire the event — _AppEntry's BlocBuilder will react to the new state:
+      // onboardingCompleted=true & userRefNumber=null → LoginScreen.
+      // No manual navigation needed here.
       context.read<SettingsBloc>().add(const CompleteOnboarding());
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(builder: (_) => const AppShell()),
-      );
     } else {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 400),
@@ -116,17 +115,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SmoothPageIndicator(
-                        controller: _pageController,
-                        count: _pages.length,
-                        effect: ExpandingDotsEffect(
-                          activeDotColor: theme.colorScheme.primary,
-                          dotColor: theme.colorScheme.outlineVariant,
-                          dotHeight: rs(context, 10),
-                          dotWidth: rs(context, 10),
-                          expansionFactor: 3,
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: SmoothPageIndicator(
+                            controller: _pageController,
+                            count: _pages.length,
+                            effect: ExpandingDotsEffect(
+                              activeDotColor: theme.colorScheme.primary,
+                              dotColor: theme.colorScheme.outlineVariant,
+                              dotHeight: rs(context, 10),
+                              dotWidth: rs(context, 10),
+                              expansionFactor: 3,
+                            ),
+                          ),
                         ),
                       ),
+                      SizedBox(width: rs(context, 8)),
                       FilledButton.icon(
                         onPressed: _onNext,
                         icon: Icon(
@@ -172,58 +178,60 @@ class _OnboardingPage extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: rs(context, 24)),
       child: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: rw(context, 420)),
-          child: Container(
-            padding: EdgeInsets.all(rs(context, 28)),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface.withValues(alpha: 0.92),
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(
-                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22),
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: rw(context, 420)),
+            child: Container(
+              padding: EdgeInsets.all(rs(context, 28)),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface.withValues(alpha: 0.92),
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(
+                  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.22),
+                ),
               ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: rs(context, 112),
-                  height: rs(context, 112),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [
-                        theme.colorScheme.primaryContainer,
-                        theme.colorScheme.primary.withValues(alpha: 0.28),
-                      ],
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: rs(context, 112),
+                    height: rs(context, 112),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          theme.colorScheme.primaryContainer,
+                          theme.colorScheme.primary.withValues(alpha: 0.28),
+                        ],
+                      ),
+                    ),
+                    child: Icon(
+                      data.icon,
+                      size: rs(context, 56),
+                      color: theme.colorScheme.onPrimaryContainer,
                     ),
                   ),
-                  child: Icon(
-                    data.icon,
-                    size: rs(context, 56),
-                    color: theme.colorScheme.onPrimaryContainer,
+                  SizedBox(height: rs(context, 36)),
+                  Text(
+                    data.title,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.4,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
-                SizedBox(height: rs(context, 36)),
-                Text(
-                  data.title,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.4,
-                    color: theme.colorScheme.onSurface,
+                  SizedBox(height: rs(context, 16)),
+                  Text(
+                    data.subtitle,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      height: 1.45,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: rs(context, 16)),
-                Text(
-                  data.subtitle,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    height: 1.45,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

@@ -85,11 +85,11 @@ class _AppShellState extends State<AppShell> {
       child: Scaffold(
         body: IndexedStack(
           index: _currentIndex,
-          children: const [
-            HomeScreen(),
-            RoutesScreen(),
-            AlertsScreen(),
-            SettingsScreen(),
+          children: [
+            HomeScreen(onSelectRoute: () => _switchToTab(1)),
+            const RoutesScreen(),
+            const AlertsScreen(),
+            const SettingsScreen(),
           ],
         ),
         bottomNavigationBar: SafeArea(

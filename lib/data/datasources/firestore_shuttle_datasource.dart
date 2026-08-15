@@ -55,7 +55,11 @@ class FirestoreShuttleDatasource {
 
     // 2. Decode polyline string directly
     final encodedPolyline = data['encodedPolyline'] as String? ?? '';
+    // ignore: avoid_print
+    print('[Polyline] raw encoded length=${encodedPolyline.length}, first20="${encodedPolyline.substring(0, encodedPolyline.length.clamp(0, 20))}"');
     final polyPoints = DirectionsService.decodePolyline(encodedPolyline);
+    // ignore: avoid_print
+    print('[Polyline] decoded ${polyPoints.length} points. first=${polyPoints.isNotEmpty ? polyPoints.first : "none"}, last=${polyPoints.isNotEmpty ? polyPoints.last : "none"}');
 
     return ShuttleRoute(
       id: doc.id,

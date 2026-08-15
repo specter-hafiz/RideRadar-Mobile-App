@@ -35,7 +35,9 @@ Future<void> _refreshHome(BuildContext context) async {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final VoidCallback onSelectRoute;
+
+  const HomeScreen({super.key, required this.onSelectRoute});
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +143,7 @@ class HomeScreen extends StatelessWidget {
                           routeState is! RouteLoading &&
                           routeState is! RouteError)
                         _NoRoutePrompt(
-                          onRefresh: () => _refreshHome(context),
+                          onSelectRoute: onSelectRoute,
                         ),
 
                       // ── Bottom Route Panel ─────────────────────────
@@ -1031,9 +1033,9 @@ class _ProximityRow extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _NoRoutePrompt extends StatelessWidget {
-  final Future<void> Function() onRefresh;
+  final VoidCallback onSelectRoute;
 
-  const _NoRoutePrompt({required this.onRefresh});
+  const _NoRoutePrompt({required this.onSelectRoute});
 
   @override
   Widget build(BuildContext context) {
@@ -1106,9 +1108,9 @@ class _NoRoutePrompt extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
-                    onPressed: () => onRefresh(),
-                    icon: const Icon(Icons.refresh_rounded, size: 18),
-                    label: const Text('Refresh Routes'),
+                    onPressed: onSelectRoute,
+                    icon: const Icon(Icons.route_rounded, size: 18),
+                    label: const Text('Select Route'),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 13),
                       shape: RoundedRectangleBorder(

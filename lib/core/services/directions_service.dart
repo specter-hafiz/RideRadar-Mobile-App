@@ -54,34 +54,45 @@ class DirectionsService {
     return decodePolyline(encoded);
   }
 
-  /// Exposed as a static method so Firestore can use it without an API key
+  /// Exposed as a static method so Firestore can use it without an API key.
+  /// Works on raw bytes to avoid Dart string escape corruption (e.g. backslash
+  /// sequences inside the encoded polyline string stored in Firestore).
   static List<List<double>> decodePolyline(String encoded) {
-    final points = <List<double>>[];
-    int index = 0, lat = 0, lng = 0;
+    if (encoded.isEmpty) return [];
+    try {
+      final List<int> codeUnits = encoded.codeUnits;
+      final points = <List<double>>[];
+      int index = 0, lat = 0, lng = 0;
 
-    while (index < encoded.length) {
-      int b, shift = 0, result = 0;
-      do {
-        b = encoded.codeUnitAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      final dLat = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
-      lat += dLat;
+      while (index < codeUnits.length) {
+        int b, shift = 0, result = 0;
+        do {
+          if (index >= codeUnits.length) return points;
+          b = codeUnits[index++] - 63;
+          result |= (b & 0x1f) << shift;
+          shift += 5;
+        } while (b >= 0x20);
+        // Use -(x)-1 instead of ~x: Dart Web compiles ~ as (x)>>>0 which
+        // returns an unsigned 32-bit value, breaking negative deltas.
+        final dLat = (result & 1) == 1 ? -(result >> 1) - 1 : (result >> 1);
+        lat += dLat;
 
-      shift = 0;
-      result = 0;
-      do {
-        b = encoded.codeUnitAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      final dLng = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
-      lng += dLng;
+        shift = 0;
+        result = 0;
+        do {
+          if (index >= codeUnits.length) return points;
+          b = codeUnits[index++] - 63;
+          result |= (b & 0x1f) << shift;
+          shift += 5;
+        } while (b >= 0x20);
+        final dLng = (result & 1) == 1 ? -(result >> 1) - 1 : (result >> 1);
+        lng += dLng;
 
-      points.add([lat / 1E5, lng / 1E5]);
+        points.add([lat / 1e5, lng / 1e5]);
+      }
+      return points;
+    } catch (_) {
+      return [];
     }
-
-    return points;
   }
 }

@@ -1,1 +1,54 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"shuttletrack-1aecf","appId":"1:1036275465121:android:ee86800f8dd8c070d529e0","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"shuttletrack-1aecf","configurations":{"android":"1:1036275465121:android:ee86800f8dd8c070d529e0","ios":"1:1036275465121:ios:306fb1e893f7c5aed529e0","macos":"1:1036275465121:ios:306fb1e893f7c5aed529e0","web":"1:1036275465121:web:fd27103169af1e1cd529e0","windows":"1:1036275465121:web:f4af6053adf4c39cd529e0"}}}}}}
+{
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(js|wasm)",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+          { "key": "X-Content-Type-Options", "value": "nosniff" }
+        ]
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "shuttletrack-1aecf",
+          "appId": "1:1036275465121:android:ee86800f8dd8c070d529e0",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "shuttletrack-1aecf",
+          "configurations": {
+            "android": "1:1036275465121:android:ee86800f8dd8c070d529e0",
+            "ios": "1:1036275465121:ios:306fb1e893f7c5aed529e0",
+            "macos": "1:1036275465121:ios:306fb1e893f7c5aed529e0",
+            "web": "1:1036275465121:web:fd27103169af1e1cd529e0",
+            "windows": "1:1036275465121:web:f4af6053adf4c39cd529e0"
+          }
+        }
+      }
+    }
+  }
+}
